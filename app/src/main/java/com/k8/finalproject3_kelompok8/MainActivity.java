@@ -9,9 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class MainActivity extends AppCompatActivity {
 
     EditText ed1;
+    Pattern p;
+    Button bl;
     String op = "+";
     String oldNumber = "";
     boolean isNewOp = true;
@@ -24,8 +29,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ed1 = findViewById(R.id.editText);
-        equalButton = findViewById(R.id.buEqual);
+        bl = findViewById(R.id.buEqual);
 
+        //Agar titik tidak bisa ditambahkan lagi setelah digunakan, != 1.0.0
+        p = Pattern.compile("^(\\d+)?([.]?\\d{0,2})?$");
+
+        ed1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Matcher m = p.matcher(ed1.getText().toString());
+                if (!m.matches()) {
+                    ed1.setError("Enter valid number");
+                    bl.setEnabled(false);
+                }
+                else{
+                    bl.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        equalButton = findViewById(R.id.buEqual);
         ed1.addTextChangedListener(equalWatcher);
     }
 
@@ -40,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String inputNumber = ed1.getText().toString();
 
+            //Enable jika field tidak kosong
             equalButton.setEnabled(!inputNumber.isEmpty());
         }
 
